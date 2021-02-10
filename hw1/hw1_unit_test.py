@@ -3,7 +3,7 @@ import HW1
 
 operations = None
 
-class TestSum(unittest.TestCase):
+class TestHW1(unittest.TestCase):
 
     def setUp(self):
         operations = HW1.Operations()
