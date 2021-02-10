@@ -44,6 +44,7 @@ class Operations():
 		offerset_to_write = offset % config.BLOCK_SIZE
 		self.offset_validation_check(index_to_write)
 		length_to_write = len(string)
+
 		while length_to_write > 0:
 			if index_to_write >= len(self.map) :
 					self.map.append(interface.get_valid_data_block())
@@ -55,7 +56,8 @@ class Operations():
 					string_to_write[offerset_to_write + index] = string[len(string) - length_to_write]
 				else:
 					string_to_write[index] = string[len(string) - length_to_write]
-				length_to_write = length_to_write - 1
+				length_to_write -=  1
+				
 			interface.update_data_block(self.map[index_to_write], "".join(string_to_write))
 			offerset_to_write = 0
 			index_to_write += 1
