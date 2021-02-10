@@ -42,26 +42,27 @@ class Operations():
 	def write_to_offset(self,offset,string):
 		index_to_write = offset / config.BLOCK_SIZE
 		offerset_to_write = offset % config.BLOCK_SIZE
+		self.offset_validation_check(index_to_write)
 		length_to_write = len(string)
 		while length_to_write > 0:
 			if index_to_write >= len(self.map) :
 					self.map.append(interface.get_valid_data_block())
-			block_data = []
 			block_data = interface.BLOCK_NUMBER_TO_DATA_BLOCK(self.map[index_to_write])
 			string_to_write = list(block_data)
-			if offerset_to_write != 0 :
-				for index in range(config.BLOCK_SIZE - offerset_to_write):
+			byte_to_write = min(config.BLOCK_SIZE - offerset_to_write, min(length_to_write, 4))
+			for index in range(byte_to_write):
+				if offset != 0:
 					string_to_write[offerset_to_write + index] = string[len(string) - length_to_write]
-					length_to_write = length_to_write - 1
-				interface.update_data_block(self.map[index_to_write], "".join(string_to_write))	
-			else :
-				byte_to_write = min(length_to_write, 4)
-				for index in range(byte_to_write):
+				else:
 					string_to_write[index] = string[len(string) - length_to_write]
-					length_to_write = length_to_write - 1
-				interface.update_data_block(self.map[index_to_write], "".join(string_to_write))
+				length_to_write = length_to_write - 1
+			interface.update_data_block(self.map[index_to_write], "".join(string_to_write))
 			offerset_to_write = 0
 			index_to_write += 1
+
+	def offset_validation_check(self, block_to_write):
+		if block_to_write >= len(self.map) or block_to_write < 0:	
+			raise Exception("offset to write is invalid")
 			
 if __name__ == "__main__":
 	if len(sys.argv) < 3: 
